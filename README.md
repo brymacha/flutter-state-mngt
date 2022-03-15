@@ -3,10 +3,7 @@
 Different flutter state management
 
 ## State management include
-    Simple block pattern from scratch
-    Flutter Block package
+    Simple Bloc pattern from scratch
+    Flutter Bloc package
     Provider
     GetX package
-    
-    
-

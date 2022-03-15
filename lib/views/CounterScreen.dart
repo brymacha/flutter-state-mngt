@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_state_mngt/blocks/counter_block.dart';
 
 class CounterScreen extends StatefulWidget {
   const CounterScreen({Key? key, required this.title}) : super(key: key);
@@ -9,24 +10,12 @@ class CounterScreen extends StatefulWidget {
 }
 
 class _CounterScreenState extends State<CounterScreen> {
-  int _counter = 0;
+  final counterBloc = CounterBlock();
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  void _decrementCounter() {
-    setState(() {
-      _counter--;
-    });
-  }
-
-  void _resetCounter() {
-    setState(() {
-      _counter = 0;
-    });
+  @override
+  void dispose() {
+    super.dispose();
+    counterBloc.dispose();
   }
 
   @override
@@ -42,9 +31,19 @@ class _CounterScreenState extends State<CounterScreen> {
             const Text(
               'CLICKED TIMES:',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+            StreamBuilder<Object>(
+              stream: counterBloc.countValueStream,
+              initialData: 0,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(
+                    '${snapshot.data}',
+                    style: Theme.of(context).textTheme.headline4,
+                  );
+                } else {
+                  return const CircularProgressIndicator();
+                }
+              },
             ),
           ],
         ),
@@ -53,7 +52,9 @@ class _CounterScreenState extends State<CounterScreen> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
-            onPressed: _incrementCounter,
+            onPressed: () {
+              counterBloc.eventBtnSink.add(ActionEvent.increment);
+            },
             tooltip: 'Increment',
             child: const Icon(Icons.add),
           ),
@@ -61,7 +62,9 @@ class _CounterScreenState extends State<CounterScreen> {
             height: 10,
           ),
           FloatingActionButton(
-            onPressed: _decrementCounter,
+            onPressed: () {
+              counterBloc.eventBtnSink.add(ActionEvent.decrement);
+            },
             tooltip: 'Decrement',
             child: const Icon(Icons.remove),
           ),
@@ -69,7 +72,9 @@ class _CounterScreenState extends State<CounterScreen> {
             height: 10,
           ),
           FloatingActionButton(
-            onPressed: _resetCounter,
+            onPressed: () {
+              counterBloc.eventBtnSink.add(ActionEvent.reset);
+            },
             tooltip: 'Reset',
             child: const Icon(Icons.loop),
           ),
